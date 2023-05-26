@@ -59,7 +59,7 @@ public class Application
         	
         	byte[] buffer = message.getBytes();
         	
-        	InetAddress address = InetAddress.getByName("192.168.3.255");
+        	InetAddress address = InetAddress.getByName(Constants.BROADCAST_HOSTNAME);
         	DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, Constants.PORT_NUMBER);
         	socket.send(packet);
             socket.close();
@@ -129,44 +129,5 @@ public class Application
     	    try { clientSocket.close(); } catch (Exception e) { /* Ignored */ }
     		}
     	}
-    }
-    
-    public static void test()
-    {
-    	System.out.println("test");
-    	List<Measurement> measurements = clientService.getMeasurements();
-		
-    	
-    	
-    	Socket socket = null;
-		try
-		{
-			InetAddress senderAddress = InetAddress.getByName("192.168.3.22");
-			socket = new Socket(senderAddress, 42069);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()), 1024);
-			
-			//send description to server
-			String message = String.format("I bims ein: %s", "Laptop");
-			out.println(measurements);
-			System.out.println(String.format("tried to send %s", measurements));
-			
-			String fromServer = null; 
-			while ((fromServer = in.readLine()) != null)
-    		{
-    			System.out.println(fromServer);
-    			out.println(measurements);
-    		    System.out.println(String.format("tried to send %s", measurements));
-    		}
-		}
-		catch(IOException e)
-		{
-			System.out.println("test failed!");
-			e.printStackTrace();
-		}
-		finally
-		{
-			try { socket.close(); } catch (Exception e) { /* Ignored */ }
-		}
     }
 }

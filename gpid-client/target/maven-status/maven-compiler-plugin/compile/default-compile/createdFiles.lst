@@ -1,0 +1,6 @@
+de\hackathon\gpidclient\Application.class
+de\hackathon\gpidclient\service\BroadcastListener.class
+de\hackathon\gpidclient\dto\Measurement.class
+de\hackathon\gpidclient\config\Constants.class
+de\hackathon\gpidclient\service\ClientService.class
+de\hackathon\gpidclient\service\ClientService$1.class
