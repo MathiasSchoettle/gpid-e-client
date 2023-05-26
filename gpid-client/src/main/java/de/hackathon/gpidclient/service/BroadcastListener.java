@@ -11,9 +11,11 @@ import de.hackathon.gpidclient.config.Constants;
 
 public class BroadcastListener extends Thread
 {
+	boolean stopped;
+	
 	public BroadcastListener()
 	{
-		
+		stopped = false;
 	}
 	
 	public void run()
@@ -22,27 +24,20 @@ public class BroadcastListener extends Thread
 		try
 		{
 			socket = new DatagramSocket(Constants.PORT_NUMBER);
-
             byte[] buffer = new byte[1024];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-            System.out.println("Waiting for UDP broadcast...");
-
-            while (true)
+            while(!stopped)
             {
-                // Receive UDP packet
+                //Receive UDP packet
                 socket.receive(packet);
 
-                // Extract the data from the packet
+                //Extract the data from the packet
                 String message = new String(packet.getData(), 0, packet.getLength());
                 InetAddress senderAddress = packet.getAddress();
-                int senderPort = packet.getPort();
 
                 // Process the received data
-                System.out.println("Received broadcast from " + senderAddress + ":" + senderPort);
-                System.out.println("Message: " + message);
-                
-                if(message.equals("Show me who you are!"))
+                if(message.equals(Constants.SHOWME))
                 {
                 	//found a server!
                 	answerServer(senderAddress, Constants.PORT_NUMBER);
@@ -62,8 +57,6 @@ public class BroadcastListener extends Thread
 	
 	public void answerServer(InetAddress senderAddress, int port)
 	{
-		//open TCP connection to server
-		System.out.println(String.format("Send back answer to Server %s:%s", senderAddress, port));
 		Socket socket = null;
 		try
 		{
@@ -71,9 +64,7 @@ public class BroadcastListener extends Thread
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			
 			//send description to server
-			String message = String.format("I bims ein: %s", "Laptop");
-			out.println(message);
-			System.out.println(String.format("Answer has been sent: %s", message));
+			out.println(Constants.SYSDECRIPTION_LAPTOP);
 		}
 		catch(IOException e)
 		{
@@ -83,5 +74,10 @@ public class BroadcastListener extends Thread
 		{
 			try { socket.close(); } catch (Exception e) { /* Ignored */ }
 		}
+	}
+	
+	public void stopListeningBroadcast()
+	{
+		stopped = false;
 	}
 }

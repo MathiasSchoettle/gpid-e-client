@@ -17,15 +17,12 @@ import de.hackathon.gpidclient.config.Constants;
 import de.hackathon.gpidclient.dto.Measurement;
 import de.hackathon.gpidclient.service.BroadcastListener;
 import de.hackathon.gpidclient.service.ClientService;
-import de.hackathon.gpidclient.service.TCPListener;
 
 public class Application
 {
 	static ClientService clientService;
 	
 	static BroadcastListener broadcastListener;
-	
-	static TCPListener tcpListener;
 	
     public static void main(String[] args)
     {
@@ -39,17 +36,16 @@ public class Application
     	//also listen for broadcasts
     	broadcastListener = new BroadcastListener(); 
     	broadcastListener.start();
-
+    	
     	//listen for the TCP calls
-    	tcpListener = new TCPListener(clientService); 
-    	tcpListener.start();
+    	listen();
     }
     
     //https://www.baeldung.com/java-broadcast-multicast
     public static void sendInitialBroadcastMessage()
     {
     	System.out.println("send broadcast greeting...");
-    	sendBroadcast(Constants.BROADCAST_GREETING);
+    	sendBroadcast(Constants.SYSDECRIPTION_LAPTOP);
     	System.out.println("broadcast greeting has been sent");
     }
     
@@ -89,40 +85,50 @@ public class Application
     	ServerSocket serverSocket = null;
     	Socket clientSocket = null;
     	
-    	try
+    	while(true)
     	{
-    		serverSocket = new ServerSocket(Constants.PORT_NUMBER);
-			clientSocket = serverSocket.accept();
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);    		        
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-    		String fromServer = null;    		
-    		while ((fromServer = in.readLine()) != null)
-    		{
-    			System.out.println(fromServer);
-    				
-    		    if (fromServer.equals("COMMAND:SEND_DATATYPE"))
-    		    {
-    		    	//answer looks smth like this
-    		    	//[1685118001;9.488, 1685118061;6.464]
-    		    	List<Measurement> measurements = clientService.getMeasurements();
-        			out.println(measurements);
-    		    	
+        	try
+        	{
+        		serverSocket = new ServerSocket(Constants.PORT_NUMBER);
+    			clientSocket = serverSocket.accept();
+    			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);    		        
+    			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        		String fromServer = null;    		
+        		while ((fromServer = in.readLine()) != null)
+        		{
+        			System.out.println(fromServer);
+        				
+        		    if (fromServer.equals("COMMAND:SEND_DATATYPE"))
+        		    {
+        		    	//answer looks smth like this
+        		    	//[1685118001;9.488, 1685118061;6.464]
+        		    	List<Measurement> measurements = clientService.getMeasurements();
+        		    	
+        		    	//convert for easier reading for the two other idiots
+        		    	String message = measurements.toString();
+        		    	message = message.replace("[", "");
+        		    	message = message.replace("]", "");
+        		    	message = message.replace(" ", "");
+        		    	
+            			out.println(message);
+        		    	
 
-    		    	clientService.clearMeasurements();
-    		    	System.out.println(String.format("tried to send %s", measurements));
-    		    }   		       		   
-    		    if (fromServer.equals("Bye.")) break;
+        		    	clientService.clearMeasurements();
+        		    	System.out.println(String.format("tried to send %s", measurements));
+        		    	break;
+        		    }   		       		   
+        		}
+        	}
+        	catch(IOException ex)
+        	{
+    			ex.printStackTrace();
+    		}
+        	finally 
+    		{
+    	    try { serverSocket.close(); } catch (Exception e) { /* Ignored */ }
+    	    try { clientSocket.close(); } catch (Exception e) { /* Ignored */ }
     		}
     	}
-    	catch(IOException ex)
-    	{
-			ex.printStackTrace();
-		}
-    	finally 
-		{
-	    try { serverSocket.close(); } catch (Exception e) { /* Ignored */ }
-	    try { clientSocket.close(); } catch (Exception e) { /* Ignored */ }
-		}
     }
     
     public static void test()
