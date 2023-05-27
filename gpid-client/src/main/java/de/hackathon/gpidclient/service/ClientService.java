@@ -63,7 +63,6 @@ public class ClientService extends Thread
 				powerusage = powerusage/1000000000;	//as the library is intended for Android, the values are shit for linux
 			}
 			
-			powerusage = 263647848.37;
 			//löppt immer noch nicht
 			if(powerusage > 1000)
 			{
