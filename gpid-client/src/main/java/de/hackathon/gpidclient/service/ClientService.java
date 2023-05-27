@@ -58,11 +58,12 @@ public class ClientService extends Thread
 			//if the battery is full and plugged in, we get 0.0
 			powerusage = Math.abs(powerusage/1000);
 			
-			if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 && powerusage > 10000000000L)
+			if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0)
 			{
 				powerusage = powerusage/1000000000;	//as the library is intended for Android, the values are shit for linux
 			}
 			
+			powerusage = 263647848.37;
 			//löppt immer noch nicht
 			if(powerusage > 1000)
 			{
@@ -70,6 +71,7 @@ public class ClientService extends Thread
 				// Convert the double value to a string
 				String numberString = Double.toString(powerusage);
 
+				numberString = numberString.replace(".", "");
 				// Extract the first three digits
 				String firstThreeDigits = numberString.substring(0, 3);
 
