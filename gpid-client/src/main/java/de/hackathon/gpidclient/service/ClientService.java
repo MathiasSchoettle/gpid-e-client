@@ -58,9 +58,26 @@ public class ClientService extends Thread
 			//if the battery is full and plugged in, we get 0.0
 			powerusage = Math.abs(powerusage/1000);
 			
-			if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0)
+			if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0 && powerusage > 10000000000L)
 			{
 				powerusage = powerusage/1000000000;	//as the library is intended for Android, the values are shit for linux
+			}
+			
+			//löppt immer noch nicht
+			if(powerusage > 1000)
+			{
+				//take first 3 digits and divide by 100
+				// Convert the double value to a string
+				String numberString = Double.toString(powerusage);
+
+				// Extract the first three digits
+				String firstThreeDigits = numberString.substring(0, 3);
+
+				// Concatenate the first digit with a decimal point and the remaining digits
+				String result = firstThreeDigits.charAt(0) + "." + firstThreeDigits.substring(1);
+
+				// Parse the result back to a double if needed
+				powerusage = Double.parseDouble(result);
 			}
 			
 			//add up all values

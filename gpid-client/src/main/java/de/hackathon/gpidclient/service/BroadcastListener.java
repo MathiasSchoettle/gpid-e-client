@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Random;
 
 import de.hackathon.gpidclient.config.Constants;
 
@@ -63,9 +64,18 @@ public class BroadcastListener extends Thread
 			socket = new Socket(senderAddress, port);
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			
+			//wait random number of seconds bc server dudes are shit and cant process multiple requests at once
+			try {
+				int num = new Random().nextInt(5 - 1 + 1) + 1;
+				Thread.sleep(num * 1000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			
 			//send description to server
 			out.println(Constants.SYSDECRIPTION_LAPTOP);
 			stopped = true;
+			System.out.println("stopped set to false");
 		}
 		catch(IOException e)
 		{
@@ -73,7 +83,6 @@ public class BroadcastListener extends Thread
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
@@ -95,6 +104,6 @@ public class BroadcastListener extends Thread
 	
 	public void stopListeningBroadcast()
 	{
-		stopped = false;
+		stopped = true;
 	}
 }
