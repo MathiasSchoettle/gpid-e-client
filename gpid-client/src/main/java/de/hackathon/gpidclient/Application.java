@@ -110,12 +110,34 @@ public class Application
         		    	message = message.replace("]", "");
         		    	message = message.replace(" ", "");
         		    	
-            			out.println(message);
+        		    	//sometimes this fucks up, so we retry 3 times
+        		    	int counter = 0;
         		    	
-
-        		    	clientService.clearMeasurements();
-        		    	System.out.println(String.format("tried to send %s", measurements));
-        		    	break;
+        		    	while(counter < 3)
+        		    	{
+        		    		try
+        		    		{
+        		    			out.println(message);
+        		    			clientService.clearMeasurements();
+                		    	System.out.println(String.format("tried to send %s", measurements));
+                		    	break;
+        		    		}
+        		    		catch(Exception ex)
+        		    		{
+        		    			//wait 2 sec
+            					try {
+            						Thread.sleep(2000);
+            					} catch (InterruptedException e1) {
+            						// TODO Auto-generated catch block
+            						e1.printStackTrace();
+            					}
+            					
+            					counter++;
+        		    		}
+        		    	}
+        		    	
+        		    	System.out.println("TCP failed after 3 retries!");
+        		    	break;	
         		    }   		       		   
         		}
         	}

@@ -58,14 +58,28 @@ public class ClientService extends Thread
 			//if the battery is full and plugged in, we get 0.0
 			powerusage = Math.abs(powerusage/1000);
 			
+			if(System.getProperty("os.name").toLowerCase().indexOf("linux") >= 0)
+			{
+				powerusage = powerusage/1000000000;	//as the library is intended for Android, the values are shit for linux
+			}
+			
 			//add up all values
 			usage += powerusage;
 		}
 
 		Measurement measurement = new Measurement(time, usage);
+		
+		//limit size of list to 10 or so, idk
+		if(measurements.size() >= Constants.MAX_SIZE_REPORTLIST)
+		{
+			//just remove first, should work
+			measurements.remove(0);
+		}
+		
 		this.measurements.add(measurement);
 		System.out.println("power measurement done.");
 		System.out.println(String.format("measurement: %s", measurement));
+		System.out.println(String.format("measurement list size: %s", measurements.size()));
 	}
 	
 	public List<Measurement> getMeasurements()

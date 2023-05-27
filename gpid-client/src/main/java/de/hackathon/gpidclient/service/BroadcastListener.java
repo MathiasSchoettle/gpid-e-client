@@ -40,7 +40,7 @@ public class BroadcastListener extends Thread
                 if(message.equals(Constants.SHOWME))
                 {
                 	//found a server!
-                	answerServer(senderAddress, Constants.PORT_NUMBER);
+                	answerServer(senderAddress, Constants.PORT_NUMBER, 0);
                 }
             }
 		}
@@ -55,7 +55,7 @@ public class BroadcastListener extends Thread
 		
 	}
 	
-	public void answerServer(InetAddress senderAddress, int port)
+	public void answerServer(InetAddress senderAddress, int port, int counter)
 	{
 		Socket socket = null;
 		try
@@ -68,7 +68,23 @@ public class BroadcastListener extends Thread
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			//wait 2 sec
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//retry
+			counter++;
+			if(counter < 3)
+			{
+				System.out.println(String.format("retry number %s", counter));
+				answerServer(senderAddress, port, counter);
+			}
+			
+			e.printStackTrace();			
 		}
 		finally
 		{
