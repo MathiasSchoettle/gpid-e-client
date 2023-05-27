@@ -65,6 +65,7 @@ public class BroadcastListener extends Thread
 			
 			//send description to server
 			out.println(Constants.SYSDECRIPTION_LAPTOP);
+			stopped = true;
 		}
 		catch(IOException e)
 		{

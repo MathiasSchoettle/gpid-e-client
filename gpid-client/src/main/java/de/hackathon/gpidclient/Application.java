@@ -120,6 +120,7 @@ public class Application
         		    			out.println(message);
         		    			clientService.clearMeasurements();
                 		    	System.out.println(String.format("tried to send %s", measurements));
+                		    	broadcastListener.stopListeningBroadcast();
                 		    	break;
         		    		}
         		    		catch(Exception ex)
